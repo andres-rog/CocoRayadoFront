@@ -6,7 +6,7 @@ import Select from 'react-select'
 import makeAnimated from 'react-select/animated';
 import logo from '../../assets/coconut.png';
 import ToggleColor from '../../components/Button/ToggleColor';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
@@ -31,11 +31,26 @@ const userTestData = {
 }
 
 export default function EditUser({history}) {
+    const [loaded, setLoaded] = useState(false);
     const {colorMode} = useColorMode();
 
     const { control, register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: yupResolver(schema),
     });
+
+    useEffect(() => {
+        if(!loaded) {
+            getInitData();
+        }
+    },[]);
+
+    async function getInitData(){
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if(userData === null){
+            history.push('/')
+        }
+    }
+
 
     function onSubmit(values){
         return new Promise((resolve) => {

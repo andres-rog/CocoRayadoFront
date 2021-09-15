@@ -1,6 +1,7 @@
 import {_api} from "./api"
 
 export const loginEndpoint = (data) => _api.post("/auth/login",data);
+export const logoutEndpoint = () => _api.get("/auth/logout");
 export const verifyUser = (data) => _api.post("/auth/verifyUser",data);
 export const signupEndpoint = (data) => _api.post("/auth/signup",data);
 export const createRecipeEndpoint = (data) => _api.post("/recipe/create",data);

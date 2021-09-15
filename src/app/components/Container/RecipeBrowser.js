@@ -45,6 +45,9 @@ function RecipeBrowser({type="search"}) {
     },[]);
 
     async function getInitData(){
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if(userData === null) return;
+
         const browseRecipesPromise = () => browseRecipes({title:"", tags:[], ingredients:[]});
         await browseRecipesPromise()
         .then(res=>{

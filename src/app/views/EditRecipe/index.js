@@ -117,6 +117,11 @@ export default function CreateRecipe({history}) {
 
     useEffect(() => {
         if(!obtainedData) {
+            const userData = JSON.parse(localStorage.getItem("user"));
+            if(userData === null){
+                history.push('/')
+            }
+
             recipeExampleData.categorias.map((element) => { defaultCategorias.push({"value":element, "label":element}) });
             recipeExampleData.ingredientes.map((element) => { defaultIngredientes.push({"value":element, "label":element}) });
             setRecipeData({

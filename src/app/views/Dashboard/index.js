@@ -15,10 +15,13 @@ export default function Dashboard({history}) {
     const {colorMode} = useColorMode();
 
     const getData = async()=> {
-        console.log("holaaa");
         try {
             const userData = JSON.parse(localStorage.getItem("user"));
-            console.log("USERDATA",userData);
+
+            if(userData === null){
+                history.push('/')
+            }
+
             setUser(userData);
         }
         catch(error){

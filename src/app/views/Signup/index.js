@@ -73,24 +73,6 @@ export default function Signup({history}) {
     }
 
     function finish(){
-        /*const verifyUserPromise = () => verifyUser({username:values.username, email:values.email});
-        return verifyUserPromise()
-        .then(res=>{
-            setUserData(values);
-            var element = document.getElementById("paso2");
-            element.scrollIntoView({ behavior: 'smooth'})
-        })
-        .catch((error) =>{
-            console.log(error)
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'Ya existe una cuenta con este Nombre de usuario o Email',
-                showConfirmButton: false,
-                timer: 1500
-            })
-        });*/
-
         Swal.fire({
             title: '¿Deseas crear tu cuenta con estas opciones?',
             showDenyButton: true,

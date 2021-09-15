@@ -3,7 +3,7 @@ import {Box, Flex, Text, Image, Stack, FormControl, Input, FormLabel, FormErrorM
 import { useForm } from "react-hook-form";
 import logo from '../../assets/coconut.png';
 import ToggleColor from '../../components/Button/ToggleColor';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
@@ -16,11 +16,26 @@ const schema = yup.object().shape({
 });
 
 export default function ChangePassword({history}) {
+    const [loaded, setLoaded] = useState(false);
     const {colorMode} = useColorMode();
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: yupResolver(schema),
     });
+
+    useEffect(() => {
+        if(!loaded) {
+            getInitData();
+        }
+    },[]);
+
+    async function getInitData(){
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if(userData === null){
+            history.push('/')
+        }
+
+    }
 
     function onSubmit(values){
         return new Promise((resolve) => {

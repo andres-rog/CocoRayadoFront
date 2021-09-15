@@ -3,17 +3,19 @@ import {Box, Flex, Text, Image, Stack, FormControl, Input, FormLabel, FormErrorM
 import { useForm } from "react-hook-form";
 import logo from '../../assets/coconut.png';
 import ToggleColor from '../../components/Button/ToggleColor';
+import {useState} from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
-import {loginEndpoint} from '../../services/apiRoutes'
+
 
 const schema = yup.object().shape({
-  username: yup.string().required('Usuario/Email esta vacio').min(3,'Debe de tener entre 3 y 255 caracteres').max(255,'Debe de tener entre 3 y 255 caracteres'),
   password: yup.string().required('Contraseña esta vacia').max(255),
+  newPassword: yup.string().required('Nueva contraseña esta vacia').max(255),
+  confirmPassword: yup.string().required('Confirmar contraseña esta vacia').max(255).oneOf([yup.ref('newPassword'),null],'La contraseña no coincide'),
 });
 
-export default function Login({history}) {
+export default function ChangePassword({history}) {
     const {colorMode} = useColorMode();
 
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
@@ -21,29 +23,31 @@ export default function Login({history}) {
     });
 
     function onSubmit(values){
-        const loginPromise = () => loginEndpoint({name:values.username,password:values.password});
-        return loginPromise()
-            .then(res=>{
-                localStorage.setItem("user",JSON.stringify(res.data.result));
-                Swal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: '¡Bienvenido!',
-                    showConfirmButton: false,
-                    timer: 1500
-                  }).then(()=>{
-                    history.push('/dashboard');
-                  })
+        return new Promise((resolve) => {
+            setTimeout(() => {
+              alert(JSON.stringify({values}, null, 2));
+              Swal.fire({
+                position: 'center',
+                icon: 'success',
+                title: '¡Contraseña actualizada!',
+                showConfirmButton: false,
+                timer: 1500
+              }).then(()=>{
+                history.push('/dashboard');
+              })
+              resolve();
+            }, 3000);
+        })
+        .catch(error => {
+            console.log(error);
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Contraseña incorrecta',
+                showConfirmButton: false,
+                timer: 1500
             })
-            .catch(() =>{
-                Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'Usuario o contraseña incorrecta',
-                    showConfirmButton: false,
-                    timer: 1500
-                })
-            });
+        });
     }
 
 
@@ -62,7 +66,7 @@ export default function Login({history}) {
                     alignItems="center"
                 >
                     <ToggleColor/>
-                    <Text fontSize="6xl" fontWeight="500">Ingresa a tu cuenta</Text>
+                    <Text fontSize="6xl" fontWeight="500">Editar usuario</Text>
                     <Image
                         position="absolute"
                         bottom="50px"
@@ -88,7 +92,7 @@ export default function Login({history}) {
                             alignContent="center"
                             alignItems="center"
                         >
-                            <Text fontSize="2xl" fontWeight="500" id="paso1">Crea tu perfil</Text>
+                            <Text fontSize="2xl" fontWeight="500" id="paso1">Cambiar contraseña</Text>
                             <Box
                                 display="flex"
                                 alignContent="center"
@@ -106,20 +110,7 @@ export default function Login({history}) {
                                 margin={5}
                             >
                                 <form onSubmit={handleSubmit(onSubmit)}>
-                                    <FormControl isInvalid={errors.username} width="400px" marginTop="30px" marginBottom="20px">
-                                        <FormLabel fontSize="xl">Usuario o Email:</FormLabel>
-                                        <Input
-                                            name="username"
-                                            backgroundColor="white"
-                                            color="black"
-                                            placeholder="Username"
-                                            {...register("username")}
-                                        />
-                                        <FormErrorMessage fontSize="md">
-                                        {errors.username && errors.username.message}
-                                        </FormErrorMessage>
-                                    </FormControl>
-                                    <FormControl isInvalid={errors.password} marginTop="30px"  marginBottom="20px">
+                                    <FormControl isInvalid={errors.password} marginTop="30px"  marginBottom="20px" width="400px">
                                         <FormLabel fontSize="xl">Contraseña:</FormLabel>
                                         <Input
                                             color="Black"
@@ -133,6 +124,34 @@ export default function Login({history}) {
                                         {errors.password && errors.password.message}
                                         </FormErrorMessage>
                                     </FormControl>
+                                    <FormControl isInvalid={errors.newPassword} marginTop="30px"  marginBottom="20px">
+                                        <FormLabel fontSize="xl">Nueva contraseña:</FormLabel>
+                                        <Input
+                                            color="Black"
+                                            type="password"
+                                            placeholder="Nueva contraseña"
+                                            backgroundColor="white"
+                                            name="newPassword"
+                                            {...register("newPassword")}
+                                        />
+                                        <FormErrorMessage fontSize="md">
+                                        {errors.newPassword && errors.newPassword.message}
+                                        </FormErrorMessage>
+                                    </FormControl>
+                                    <FormControl isInvalid={errors.confirmPassword} marginTop="30px"  marginBottom="20px">
+                                        <FormLabel fontSize="xl">Confirmar nueva contraseña:</FormLabel>
+                                        <Input
+                                            color="Black"
+                                            type="password"
+                                            placeholder="Nueva contraseña"
+                                            backgroundColor="white"
+                                            name="confirmPassword"
+                                            {...register("confirmPassword")}
+                                        />
+                                        <FormErrorMessage fontSize="md">
+                                        {errors.confirmPassword && errors.confirmPassword.message}
+                                        </FormErrorMessage>
+                                    </FormControl>
                                     <Flex
                                         marginTop="30px"
 
@@ -141,8 +160,7 @@ export default function Login({history}) {
                                         alignContent="center"
                                         alignItems="center"
                                     >
-                                        <Button type="submit" marginTop="5%" marginBottom="5%" width="70%" height="50px" colorScheme="teal" borderWidth={2} borderColor="rgb(40,100,100)" isLoading={isSubmitting} fontSize="xl">Ingresar</Button>
-                                        <Link fontSize="md" href="http://localhost:3000/signup" marginBottom="5%">¿No tienes una cuenta?</Link>
+                                        <Button type="submit" marginTop="5%" marginBottom="5%" width="70%" height="50px" colorScheme="teal" borderWidth={2} borderColor="rgb(40,100,100)" isLoading={isSubmitting} fontSize="xl">Cambiar contraseña</Button>
                                     </Flex>
                                 </form>
                             </Box>

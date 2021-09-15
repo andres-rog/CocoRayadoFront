@@ -15,15 +15,16 @@ let imageSrc=null;
 function RecipeStepContainer({step=0, onChangeStep=()=>{}}) {
     const {colorMode} = useColorMode();
     const [description, setDescription] = useState('');
+    const [imageFile, setImageFile] = useState(null);
 
     function handleDescription(e) {
         setDescription(e.target.value);
-        onChangeStep({step, imageSrc:imageSrc, description:description});
+        onChangeStep({step, imageSrc:imageFile, description:e.target.value});
     }
 
     function handleImage(e) {
-        imageSrc = e.file;
-        onChangeStep({step, imageSrc:imageSrc, description:description});
+        setImageFile(e.file);
+        onChangeStep({step, imageSrc:e.file, description:description});
     }
 
   return (
@@ -34,7 +35,7 @@ function RecipeStepContainer({step=0, onChangeStep=()=>{}}) {
         borderRadius="5"
         borderWidth={1}
         borderColor={(colorMode === "light") ? "#333" : "#fff"}
-        backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)"}
+        backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.12)"}
         margin="0 auto"
         marginBottom="10px"
 

@@ -15,21 +15,23 @@ import {useState} from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
-
+import {upload} from '../../services/apiRoutes';
+import {createRecipeEndpoint} from '../../services/apiRoutes';
 import {categorias, ingredientes} from '../../assets/data.json';
+import { number } from "yup/lib/locale";
 
 const schema = yup.object().shape({
-  title: yup.string().min(5,'El titulo es muy corto.'),
-  description: yup.string().min(30,'La descripcion es muy corta.').max(200,'La descripcion es demaciado larga.'),
+  title: yup.string().min(5,'El título es muy corto.'),
+  description: yup.string().min(30,'La descripción es muy corta.').max(200,'La descripción es demaciado larga.'),
   ingredientsQuantity: yup.number().min(1).max(99),
-  ingredients: yup.array().min(1,'Debes agregar por lo menos un ingrediente principal').max(5,'No puedes elegir mas de 5 ingredientes principales.'),
-  tags: yup.array().min(1,'Debes elegir por lo menos una categoria').max(3,'No puedes elegir mas de 3 categorias.'),
+  ingredients: yup.array().min(1,'Debes agregar por lo menos un ingrediente principal.').max(5,'No puedes elegir mas de 5 ingredientes principales.'),
+  tags: yup.array().min(1,'Debes elegir por lo menos una categoría.').max(3,'No puedes elegir más de 3 categorías.'),
   thumbnail: yup.object().nullable().required('Agrega una foto del platillo.'),
 });
 
 const animatedComponents = makeAnimated();
-let ingredientsQuantity = "0";
-let stepsData = [{description:'', imageSrc:null}];
+let stepsData = [{description:'', img:null}];
+const numberInputValues = {ingredientsAmount:1,portions:1,calories:1};
 
 export default function CreateRecipe({history}) {
     const [steps, setSteps] = useState([{step:1}]);
@@ -42,7 +44,7 @@ export default function CreateRecipe({history}) {
 
     function addNewStep() {
         setSteps([...steps, {step:(steps.length+2)}]);
-        stepsData = [...stepsData,{image:null,description:null}];
+        stepsData.push({image:null,description:null});
         setStepsDisable(true);
     }
 
@@ -63,35 +65,66 @@ export default function CreateRecipe({history}) {
         setStepsDisable(disable);
     }
 
+    function handleIngredientsAmount(e){
+        numberInputValues.ingredientsAmount=e;
+    }
+    function handlePortionsAmount(e){
+        numberInputValues.portions=e;
+    }
+    function handleCaloriesAmount(e){
+        numberInputValues.calories=e;
+    }
+
     function submitRecipe(values){
+        console.log("STEPS",values.thumbnail.file)
         Swal.fire({
-            title: '¿Deseas terminar tu receta?',
+            title: '¿Deseas crear la receta con estas opciones?',
             showDenyButton: true,
-            confirmButtonText: `¡Si, terminar!`,
+            confirmButtonText: `¡Si, crear!`,
             denyButtonText: `¡Aun no!`,
             showLoaderOnConfirm: true,
-            preConfirm: ()=>{
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                      console.log({values,stepsData});
-                      alert(JSON.stringify(values, null, 2));
-                      resolve();
-                    }, 3000);
-                })
-                .catch(error => {
-                    console.log(error);
-                    Swal.showValidationMessage(`¡Oh no! Sucedio un error inesperado :c`);
-                });
-            },
-            allowOutsideClick: () => !Swal.isLoading()
         })
         .then((result) => {
             if (result.isConfirmed) {
-                Swal.fire('!La receta ha sido creada exitosamente!', '', 'success')
-                .then(()=>{
-                    console.log("Receta terminada",{values, stepsData});
-                    history.push('/dashboard');
-                });
+                Swal.fire({
+                    title: 'Creando tu receta',
+                    html: 'Por favor espera…',
+                    allowEscapeKey: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading()
+                        const createRecipe = {
+                            title:values.title,
+                            description:values.description,
+                            thumbnail:values.thumbnail.file,
+                            servingsAmount:numberInputValues.portions,
+                            ingredientsAmount:numberInputValues.ingredientsAmount,
+                            caloriesPerServing:numberInputValues.calories,
+                            tags:values.tags,
+                            ingredients:values.ingredients,
+                            step:stepsData
+                        };
+                        const createRecipePromise = () => createRecipeEndpoint(createRecipe);
+                        createRecipePromise()
+                            .then(()=>{
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡La receta se creó exitosamente!'
+                                }).then(()=>{
+                                    history.push('/dashboard');
+                                });
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: '¡Oh no! sucedió un error inesperado.',
+                                    text: ':c'
+                                });
+                            })
+
+                    }
+                })
             }
         })
     }
@@ -113,14 +146,14 @@ export default function CreateRecipe({history}) {
             <Box display="flex" flexDir="column">
                 <HStack marginLeft="5%" marginBottom="5px">
                     <Image src="https://cdn-icons-png.flaticon.com/512/179/179349.png" width="30px"></Image>
-                    <Text textAlign="left" fontSize="xl" fontWeight="500">Comencemos con la informacion basica:</Text>
+                    <Text textAlign="left" fontSize="xl" fontWeight="500">Comencemos con la información básica:</Text>
                 </HStack>
                 <Box
                     width="90%"
                     borderRadius="5"
                     borderWidth={1}
                     borderColor={(colorMode === "light") ? "#333" : "#fff"}
-                    backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)"}
+                    backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.12)"}
                     margin="0 auto"
                     marginBottom="30px"
 
@@ -143,7 +176,7 @@ export default function CreateRecipe({history}) {
                             </Stack>
                         </FormControl>
                         <FormControl isInvalid={errors.description} display="flex" alignItems="center" padding={3}>
-                            <FormLabel minW="210px" fontSize="lg">Descripcion:</FormLabel>
+                            <FormLabel minW="210px" fontSize="lg">Descripción:</FormLabel>
                             <Stack width="90%">
                                 <Controller
                                     name="description"
@@ -161,7 +194,7 @@ export default function CreateRecipe({history}) {
                             </Stack>
                         </FormControl>
                         <FormControl isInvalid={errors.tags} display="flex" alignItems="center" padding={3}>
-                            <FormLabel minW="210px" fontSize="lg">Categorias:</FormLabel>
+                            <FormLabel minW="210px" fontSize="lg">Categorías:</FormLabel>
                             <Stack width="90%" color="black">
                                 <Box color="black">
                                     <Controller
@@ -180,7 +213,7 @@ export default function CreateRecipe({history}) {
                                 </Box>
                                 <FormErrorMessage>{errors.tags && errors.tags.message}</FormErrorMessage>
                             </Stack>
-                            <Tooltip label="Selecciona maximo 3 categorias que describan esta receta."><QuestionIcon marginLeft="5px" width="30px"/></Tooltip>
+                            <Tooltip label="Selecciona máximo 3 categorías que describan esta receta."><QuestionIcon marginLeft="5px" width="30px"/></Tooltip>
                         </FormControl>
                         <FormControl isInvalid={errors.ingredients} display="flex" alignItems="center" padding={3}>
                             <FormLabel minW="210px" fontSize="lg">Ingredientes principales:</FormLabel>
@@ -206,7 +239,7 @@ export default function CreateRecipe({history}) {
                         </FormControl>
                         <FormControl isInvalid={errors.ingredientsQuantity} display="flex" alignItems="center" padding={3}>
                             <FormLabel minW="210px" fontSize="lg">Cantidad de ingredientes: </FormLabel>
-                            <NumberInput max={99} min={1} width="300px" id="ingredientsQuantity" backgroundColor="white" color="black" defaultValue="1">
+                            <NumberInput max={99} min={1} width="300px" name="ingredientsAmount" backgroundColor="white" color="black" defaultValue="1" onChange={handleIngredientsAmount}>
                                 <NumberInputField/>
                                 <NumberInputStepper>
                                     <NumberIncrementStepper color="black"/>
@@ -214,6 +247,28 @@ export default function CreateRecipe({history}) {
                                 </NumberInputStepper>
                             </NumberInput>
                             <Tooltip label="Indica cuantos ingredientes utiliza esta receta."><QuestionIcon marginLeft="5px" width="30px"/></Tooltip>
+                        </FormControl>
+                        <FormControl isInvalid={errors.ingredientsQuantity} display="flex" alignItems="center" padding={3}>
+                            <FormLabel minW="210px" fontSize="lg">Porciones: </FormLabel>
+                            <NumberInput max={99} min={1} width="300px" name="portions" backgroundColor="white" color="black" defaultValue="1" onChange={handlePortionsAmount}>
+                                <NumberInputField/>
+                                <NumberInputStepper>
+                                    <NumberIncrementStepper color="black"/>
+                                    <NumberDecrementStepper color="black"/>
+                                </NumberInputStepper>
+                            </NumberInput>
+                            <Tooltip label="Indica cuantas porciones tiene esta receta."><QuestionIcon marginLeft="5px" width="30px"/></Tooltip>
+                        </FormControl>
+                        <FormControl isInvalid={errors.ingredientsQuantity} display="flex" alignItems="center" padding={3}>
+                            <FormLabel minW="210px" fontSize="lg">Calorías por porción: </FormLabel>
+                            <NumberInput max={9999} min={1} width="300px" name="calories" backgroundColor="white" color="black" defaultValue="1" onChange={handleCaloriesAmount}>
+                                <NumberInputField/>
+                                <NumberInputStepper>
+                                    <NumberIncrementStepper color="black"/>
+                                    <NumberDecrementStepper color="black"/>
+                                </NumberInputStepper>
+                            </NumberInput>
+                            <Tooltip label="Indica cuantas calorias contiene cada porcion de esta receta."><QuestionIcon marginLeft="5px" width="30px"/></Tooltip>
                         </FormControl>
                         <FormControl isInvalid={errors.thumbnail} display="flex" alignItems="center" padding={3}>
                             <FormLabel minW="210px" fontSize="lg">Foto del platillo: </FormLabel>
@@ -233,11 +288,11 @@ export default function CreateRecipe({history}) {
                 </Box>
                 <HStack marginLeft="5%" marginTop="20px">
                     <Image src="https://cdn-icons-png.flaticon.com/512/179/179350.png" width="30px"></Image>
-                    <Text textAlign="left" fontSize="xl" fontWeight="500">Continuemos con los las instrucciones para la receta:</Text>
+                    <Text textAlign="left" fontSize="xl" fontWeight="500">Continuemos con las instrucciones para la receta:</Text>
                 </HStack>
                 {
                     steps.map((element, index)=>(
-                        <RecipeStepContainer key={index} step={index} onChangeStep={handleStepData}/>
+                        <RecipeStepContainer step={index} onChangeStep={handleStepData}/>
                     ))
                 }
                 <HStack margin="0 auto" marginTop="30px" marginBottom="80px">

@@ -49,7 +49,7 @@ function StepContainer({imageSize="200px", containerId="paso2", imagesArray, hea
                 borderRadius="30"
                 borderWidth={2}
                 borderColor={(colorMode === "light") ? "#333" : "#fff"}
-                backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)"}
+                backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.12)"}
                 margin={5}
                 marginTop={1}
                 padding={10}

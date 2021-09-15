@@ -9,6 +9,8 @@ import {useState} from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
+import {signupEndpoint} from '../../services/apiRoutes'
+import {verifyUser} from '../../services/apiRoutes'
 
 import {proteinasData, FrutasVegetalesData, SemillasLegumbresData} from '../../assets/data.json'
 
@@ -20,7 +22,7 @@ const schema = yup.object().shape({
   confirmPassword: yup.string().oneOf([yup.ref('password'),null],'La contraseña no coincide'),
 });
 
-export default function Home({history}) {
+export default function Signup({history}) {
     const [userData, setUserData] = useState([]);
     const [ingredientsArray1, setIngredientsArray1] = useState([]);
     const [ingredientsArray2, setIngredientsArray2] = useState([]);
@@ -34,14 +36,22 @@ export default function Home({history}) {
     });
 
       function onSubmit_paso1(values) {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
+        const verifyUserPromise = () => verifyUser({username:values.username, email:values.email});
+        return verifyUserPromise()
+        .then(res=>{
             setUserData(values);
             var element = document.getElementById("paso2");
             element.scrollIntoView({ behavior: 'smooth'})
-            resolve();
-          }, 3000);
+        })
+        .catch((error) =>{
+            console.log(error)
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Ya existe una cuenta con este Nombre de usuario o Email',
+                showConfirmButton: false,
+                timer: 1500
+            })
         });
       }
 
@@ -63,6 +73,24 @@ export default function Home({history}) {
     }
 
     function finish(){
+        /*const verifyUserPromise = () => verifyUser({username:values.username, email:values.email});
+        return verifyUserPromise()
+        .then(res=>{
+            setUserData(values);
+            var element = document.getElementById("paso2");
+            element.scrollIntoView({ behavior: 'smooth'})
+        })
+        .catch((error) =>{
+            console.log(error)
+            Swal.fire({
+                position: 'center',
+                icon: 'error',
+                title: 'Ya existe una cuenta con este Nombre de usuario o Email',
+                showConfirmButton: false,
+                timer: 1500
+            })
+        });*/
+
         Swal.fire({
             title: '¿Deseas crear tu cuenta con estas opciones?',
             showDenyButton: true,
@@ -70,10 +98,11 @@ export default function Home({history}) {
             denyButtonText: `¡Aun no!`,
             showLoaderOnConfirm: true,
             preConfirm: ()=>{
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                      resolve();
-                    }, 3000);
+                const signupPromise = () => signupEndpoint({username:userData.username, email:userData.email, password: userData.password, confirmPassword: userData.confirmPassword, ingredientesFavoritos: [...ingredientsArray1, ...ingredientsArray2, ...ingredientsArray3]});
+
+                return signupPromise()
+                .then(res=>{
+                    localStorage.setItem("user",JSON.stringify(res.data.result));
                 })
                 .catch(error => {
                     console.log(error);
@@ -86,7 +115,6 @@ export default function Home({history}) {
             if (result.isConfirmed) {
                 Swal.fire('!Tu cuenta ha sido creada exitosamente!', '', 'success')
                 .then(()=>{
-                    console.log("Cuenta terminada",{userData, favoritos:[...ingredientsArray1,...ingredientsArray2,...ingredientsArray3]});
                     history.push('/dashboard');
                 });
             }
@@ -149,7 +177,7 @@ export default function Home({history}) {
                                 borderRadius="30"
                                 borderWidth={2}
                                 borderColor={(colorMode === "light") ? "#333" : "#fff"}
-                                backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)"}
+                                backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.12)"}
                                 margin={5}
                             >
                                 <form onSubmit={handleSubmit(onSubmit_paso1)}>

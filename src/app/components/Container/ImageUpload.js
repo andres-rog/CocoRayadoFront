@@ -6,17 +6,36 @@ import {
   Box,
   useColorMode
 } from "@chakra-ui/react";
-
+import {upload} from '../../services/apiRoutes';
 import {useState} from 'react';
-
+import loadingGIF from '../../assets/loading.gif';
+import Swal from 'sweetalert2';
 
 function ImageUpload({onChange=()=>{}}) {
-    const [placeholder, setPlaceholder] = useState(false);
+    const [placeholder, setPlaceholder] = useState("");
     const {colorMode} = useColorMode();
 
-    function onChangeHanlder(e){
-        setPlaceholder(e.target.files[0]);
-        onChange({file: e.target.files[0]});
+    async function onChangeHanlder(e){
+        try{
+          setPlaceholder(loadingGIF);
+          const formData = new FormData();
+          for(let file of Array.from(e.target.files)){
+            formData.append("img",file);
+          }
+          const response = await upload(formData);
+          const url = response.data.data[0].newPath.url
+          onChange({file: url});
+          setPlaceholder(url);
+        }
+        catch(err){
+          console.log(err);
+          setPlaceholder("");
+          Swal.fire({
+            icon: 'error',
+            title: '¡Oh no! sucedió un error al subir la imagen.',
+            text: ':c'
+          });
+        }
     }
 
   return (
@@ -29,6 +48,7 @@ function ImageUpload({onChange=()=>{}}) {
             borderColor={(colorMode === "light") ? "#333" : "#fff"}
         >
         <Input
+            disabled={placeholder===loadingGIF ? "true" : null}
             marginTop="5px"
             type="file"
             accept="image/png, image/jpeg, image/jpg"
@@ -37,7 +57,7 @@ function ImageUpload({onChange=()=>{}}) {
             border="none"
             onChange={onChangeHanlder}
         />
-        <Image src={placeholder ? URL.createObjectURL(placeholder) : placeholderImage} width="200px" margin="0 auto" marginBottom={2}/>
+        <Image src={placeholder ? placeholder : placeholderImage} width="200px" height="170px" margin="0 auto" objectFit="cover" marginBottom={2}/>
     </Box>
   );
 }

@@ -23,7 +23,7 @@ function Card(props) {
     >
         <Stack>
             <Image width="260px" src={imagenUrl}/>
-            <Box backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.2)"} width="260px" height="180px" borderRadius="10" padding="3px">
+            <Box backgroundColor={(colorMode === "light") ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.12)"} width="260px" height="180px" borderRadius="10" padding="3px">
                 <Text fontSize="3xl" fontWeight="500">{texto}</Text>
             </Box>
         </Stack>

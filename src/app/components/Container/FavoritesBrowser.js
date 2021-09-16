@@ -47,6 +47,7 @@ function FavoritesBrowser({type="favorites"}) {
     async function getInitData(){
         const userData = JSON.parse(localStorage.getItem("user"));
         if(userData === null) return;
+
         const browseRecipesPromise = () => browseRecipes({title:"", tags:[], ingredients:[], type:"myFavorites"});
         await browseRecipesPromise()
         .then(res=>{

@@ -22,6 +22,7 @@ export default function Dashboard({history}) {
                 history.push('/')
             }
 
+
             setUser(userData);
         }
         catch(error){

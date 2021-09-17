@@ -175,8 +175,7 @@ export default function ViewRecipe({history}) {
                     confirmButtonText: '¡Si, estoy seguro!'
                   }).then((result) => {
                     if (result.isConfirmed) {
-                      const deleteRecipePromise = deleteRecipe({_id:recipeData._id});
-                      deleteRecipePromise()
+                        deleteRecipe({_id:recipeData._id})
                         .then(()=>{
                             Swal.fire(
                                 'Receta eliminada.',

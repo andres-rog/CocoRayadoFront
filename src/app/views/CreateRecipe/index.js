@@ -34,7 +34,6 @@ let stepsData = [{description:'', img:null}];
 const numberInputValues = {ingredientsAmount:1,portions:1,calories:1};
 
 export default function CreateRecipe({history}) {
-    const [steps, setSteps] = useState([{step:1}]);
     const [stepsDisable, setStepsDisable] = useState(true);
     const {colorMode} = useColorMode();
 
@@ -43,21 +42,17 @@ export default function CreateRecipe({history}) {
     });
 
     function addNewStep() {
-        setSteps([...steps, {step:(steps.length+2)}]);
         stepsData.push({image:null,description:null});
         setStepsDisable(true);
     }
 
     function deleteStep() {
-        let stepArray = steps;
-        stepArray.pop();
         stepsData.pop();
-        setSteps([...stepArray]);
         setStepsDisable(false);
     }
 
     function handleStepData(e) {
-        stepsData[e.step]={imageSrc:e.imageSrc,description:e.description};
+        stepsData[e.step]={img:e.imageSrc,description:e.description};
         let disable=false;
         stepsData.map((element)=>{
             if(element.description.length>500 || element.description.length<20) disable=true;
@@ -76,7 +71,6 @@ export default function CreateRecipe({history}) {
     }
 
     function submitRecipe(values){
-        console.log("STEPS",values.thumbnail.file)
         Swal.fire({
             title: '¿Deseas crear la receta con estas opciones?',
             showDenyButton: true,
@@ -130,7 +124,7 @@ export default function CreateRecipe({history}) {
     }
 
     return (
-        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#86FFF5, #C0FFFA, #B8FFF9)"} minWidth="100vw" minHeight="100vh">
+        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#99e5f6 , #28b5d8)"} minWidth="100vw" minHeight="100vh">
             <Box
                 display="flex"
                 flexDir="column"
@@ -291,13 +285,13 @@ export default function CreateRecipe({history}) {
                     <Text textAlign="left" fontSize="xl" fontWeight="500">Continuemos con las instrucciones para la receta:</Text>
                 </HStack>
                 {
-                    steps.map((element, index)=>(
-                        <RecipeStepContainer step={index} onChangeStep={handleStepData}/>
+                    stepsData.map((element, index)=>(
+                        <RecipeStepContainer key={index} step={index} onChangeStep={handleStepData}/>
                     ))
                 }
                 <HStack margin="0 auto" marginTop="30px" marginBottom="80px">
-                    <Button display={steps.length < 2 ? "none" : "inline"} width="250px" height="50px" colorScheme="red" borderWidth={2} borderColor="rgb(40,100,100)" fontSize="xl" onClick={deleteStep}>Eliminar paso</Button>
-                    <Button display={steps.length===15 ? "none" : "inline"} disabled={stepsDisable} width="250px" height="50px" colorScheme="teal" borderWidth={2} borderColor="rgb(40,100,100)" fontSize="xl" onClick={addNewStep}>Agregar otro paso</Button>
+                    <Button display={stepsData.length < 2 ? "none" : "inline"} width="250px" height="50px" colorScheme="red" borderWidth={2} borderColor="rgb(40,100,100)" fontSize="xl" onClick={deleteStep}>Eliminar paso</Button>
+                    <Button display={stepsData.length===15 ? "none" : "inline"} disabled={stepsDisable} width="250px" height="50px" colorScheme="teal" borderWidth={2} borderColor="rgb(40,100,100)" fontSize="xl" onClick={addNewStep}>Agregar otro paso</Button>
                     <form onSubmit={handleSubmit(submitRecipe)}>
                         <Button disabled={stepsDisable} type="submit" width="250px" height="50px" colorScheme="teal" borderWidth={2} borderColor="rgb(40,100,100)" fontSize="xl" isLoading={isSubmitting}>Finalizar</Button>
                     </form>

@@ -10,7 +10,7 @@ import EditRecipe from './app/views/EditRecipe/index';
 import ChangePassword from './app/views/ChangePassword/index';
 import CreateRecipe from './app/views/CreateRecipe/index';
 import ViewRecipe from './app/views/ViewRecipe/index';
-
+import Contacto from './app/views/Contacto/index';
 
 const Routes = () =>  (
     <Switch>
@@ -23,6 +23,7 @@ const Routes = () =>  (
         <Route exact path="/createrecipe" component={CreateRecipe}  />
         <Route exact path="/recipe/:id" component={ViewRecipe} />
         <Route exact path="/editrecipe/:id" component={EditRecipe} />
+        <Route exact path="/contacto" component={Contacto} />
     </Switch>
 )
 

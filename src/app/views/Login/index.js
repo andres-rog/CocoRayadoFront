@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
 import {loginEndpoint} from '../../services/apiRoutes'
+import {useEffect} from 'react';
 
 const schema = yup.object().shape({
   username: yup.string().required('Usuario/Email esta vacio').min(3,'Debe de tener entre 3 y 255 caracteres').max(255,'Debe de tener entre 3 y 255 caracteres'),
@@ -19,6 +20,10 @@ export default function Login({history}) {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: yupResolver(schema),
     });
+
+    function goToSignup() {
+        history.push('/signup');
+    }
 
     function onSubmit(values){
         const loginPromise = () => loginEndpoint({name:values.username,password:values.password});
@@ -46,9 +51,15 @@ export default function Login({history}) {
             });
     }
 
+    useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if(userData !== null){
+            history.push('/dashboard')
+        }
+    },[]);
 
     return (
-        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#86FFF5, #C0FFFA, #B8FFF9)"} minWidth="100vw" minHeight="100vh">
+        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#99e5f6 , #28b5d8)"} minWidth="100vw" minHeight="100vh">
             <Flex
                 display="flex"
                 flexDir="column"
@@ -142,7 +153,7 @@ export default function Login({history}) {
                                         alignItems="center"
                                     >
                                         <Button type="submit" marginTop="5%" marginBottom="5%" width="70%" height="50px" colorScheme="teal" borderWidth={2} borderColor="rgb(40,100,100)" isLoading={isSubmitting} fontSize="xl">Ingresar</Button>
-                                        <Link fontSize="md" href="http://localhost:3000/signup" marginBottom="5%">¿No tienes una cuenta?</Link>
+                                        <Link fontSize="md" href="#" onClick={goToSignup} marginBottom="5%">¿No tienes una cuenta?</Link>
                                     </Flex>
                                 </form>
                             </Box>

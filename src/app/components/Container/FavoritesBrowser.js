@@ -44,18 +44,16 @@ function FavoritesBrowser({type="favorites"}) {
         }
     },[]);
 
-    async function getInitData(){
+    function getInitData(){
         const userData = JSON.parse(localStorage.getItem("user"));
         if(userData === null) return;
 
-        const browseRecipesPromise = () => browseRecipes({title:"", tags:[], ingredients:[], type:"myFavorites"});
-        await browseRecipesPromise()
+        browseRecipes({title:"", tags:[], ingredients:[], type:"myFavorites"})
         .then(res=>{
             setRecipes(res.data.result);
             setLoaded(true);
         })
         .catch(err=>{
-            console.log(err)
             Swal.fire({
                 icon: 'error',
                 title: '¡Oh no! sucedió un error al buscar las recetas.',
@@ -82,7 +80,6 @@ function FavoritesBrowser({type="favorites"}) {
 
         values["ingredientsQuantity"]=ingredientsQuantity;
         values["orderBy"]=orderBy;
-        console.log("SELECTED INGREDIENTS",selectedIngredients)
         const searchValues = {
             title: values.title,
             tags: values.selectedCategories,
@@ -109,7 +106,6 @@ function FavoritesBrowser({type="favorites"}) {
 
     function handleCategories(e) {
         selectedCategories=e;
-        console.log(selectedCategories)
     }
 
     function handleIngredients(e) {
@@ -257,7 +253,7 @@ function FavoritesBrowser({type="favorites"}) {
                     {recipes.length===0 ? <Text fontSize="3xl" fontWeight="500">No se encontraron resultados. :c</Text> : null}
                     {
                         recipes.map((element, index)=>(
-                        <RecipePicker keyId={element._id} title={element.title} steps={element.step.length} ingredients={element.ingredientsAmount} favorites={element.favorites} date={element.time.split('T')[0]} imageUrl={element.thumbnail} type={type}/>
+                        <RecipePicker key={index} keyId={element._id} title={element.title} steps={element.step.length} ingredients={element.ingredientsAmount} favorites={element.favorites} date={element.time.split('T')[0]} imageUrl={element.thumbnail} type={type} onUpdate={getInitData}/>
                     ))
                 }
             </Box>
@@ -274,7 +270,6 @@ function FavoritesBrowser({type="favorites"}) {
 
   return (
     <Box>
-        {console.log(recipes)}
         {loaded ? showRecipes() : loading()}
     </Box>
   );

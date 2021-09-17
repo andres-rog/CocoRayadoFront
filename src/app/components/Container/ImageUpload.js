@@ -11,8 +11,8 @@ import {useState} from 'react';
 import loadingGIF from '../../assets/loading.gif';
 import Swal from 'sweetalert2';
 
-function ImageUpload({onChange=()=>{}}) {
-    const [placeholder, setPlaceholder] = useState("");
+function ImageUpload({onChange=()=>{}, thumbnail=""}) {
+    const [placeholder, setPlaceholder] = useState(thumbnail);
     const {colorMode} = useColorMode();
 
     async function onChangeHanlder(e){

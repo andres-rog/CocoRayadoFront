@@ -38,7 +38,6 @@ export default function ViewRecipe({history}) {
     async function getInitData(_id){
         const findRecipePromise = () => findRecipe({_id});
         const userData = JSON.parse(localStorage.getItem("user"));
-        console.log("USERDATA",userData);
         setUser(userData);
         await findRecipePromise()
             .then(res=>{
@@ -60,7 +59,6 @@ export default function ViewRecipe({history}) {
     }
 
     function getButtonStatus(userData, recipe) {
-        console.log(userData)
         if(userData) {
             const buttons = buttonsStatus;
             if(userData._id === recipe._owner) {
@@ -96,8 +94,6 @@ export default function ViewRecipe({history}) {
             getInitData(id);
         }
     },[]);
-
-    console.log("BUTTON STATUS",buttonsStatus)
 
     function addFavorite(){
         addFavoriteRecipe({_recipeId:recipeData._id})
@@ -288,7 +284,7 @@ export default function ViewRecipe({history}) {
     }
 
     return (
-        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#86FFF5, #C0FFFA, #B8FFF9)"} minWidth="100vw" minHeight="100vh">
+        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#99e5f6 , #28b5d8)"} minWidth="100vw" minHeight="100vh">
             <Box
                 display="flex"
                 flexDir="column"

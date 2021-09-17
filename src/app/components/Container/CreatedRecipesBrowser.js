@@ -82,7 +82,6 @@ function CreatedRecipesBrowser({type="recipes"}) {
 
         values["ingredientsQuantity"]=ingredientsQuantity;
         values["orderBy"]=orderBy;
-        console.log("SELECTED INGREDIENTS",selectedIngredients)
         const searchValues = {
             title: values.title,
             tags: values.selectedCategories,
@@ -109,7 +108,6 @@ function CreatedRecipesBrowser({type="recipes"}) {
 
     function handleCategories(e) {
         selectedCategories=e;
-        console.log(selectedCategories)
     }
 
     function handleIngredients(e) {
@@ -257,7 +255,7 @@ function CreatedRecipesBrowser({type="recipes"}) {
                     {recipes.length===0 ? <Text fontSize="3xl" fontWeight="500">No se encontraron resultados. :c</Text> : null}
                     {
                         recipes.map((element, index)=>(
-                        <RecipePicker keyId={element._id} title={element.title} steps={element.step.length} ingredients={element.ingredientsAmount} favorites={element.favorites} date={element.time.split('T')[0]} imageUrl={element.thumbnail} type={type}/>
+                        <RecipePicker key={index}  keyId={element._id} title={element.title} steps={element.step.length} ingredients={element.ingredientsAmount} favorites={element.favorites} date={element.time.split('T')[0]} imageUrl={element.thumbnail} type={type} onUpdate={getInitData}/>
                     ))
                 }
             </Box>
@@ -274,7 +272,6 @@ function CreatedRecipesBrowser({type="recipes"}) {
 
   return (
     <Box>
-        {console.log(recipes)}
         {loaded ? showRecipes() : loading()}
     </Box>
   );

@@ -1,7 +1,7 @@
 import axios from "axios";
 const isProduction = process.env.NODE_ENV === "production";
 
-const baseURL = isProduction ? "www.deploy.com/api" : "http://localhost:3115/api";
+const baseURL = isProduction ? "https://cocorayado.herokuapp.com/api" : "http://localhost:3092/api";
 
 axios.defaults.withCredentials = true
 

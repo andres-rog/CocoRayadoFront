@@ -5,7 +5,7 @@ import logo from '../../assets/coconut.png';
 import ToggleColor from '../../components/Button/ToggleColor';
 import StepContainer from '../../components/Container/stepContainer';
 import { HashLink as ScrollLink } from 'react-router-hash-link';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
@@ -35,10 +35,15 @@ export default function Signup({history}) {
         resolver: yupResolver(schema),
     });
 
+    function goToLogin(){
+        history.push('/login');
+    }
+
       function onSubmit_paso1(values) {
         const verifyUserPromise = () => verifyUser({username:values.username, email:values.email});
         return verifyUserPromise()
         .then(res=>{
+            console.log(res);
             setUserData(values);
             var element = document.getElementById("paso2");
             element.scrollIntoView({ behavior: 'smooth'})
@@ -103,9 +108,15 @@ export default function Signup({history}) {
         })
     }
 
+    useEffect(() => {
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if(userData !== null){
+            history.push('/dashboard')
+        }
+    },[]);
 
     return (
-        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#86FFF5, #C0FFFA, #B8FFF9)"} minWidth="100vw" minHeight="100vh">
+        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#99e5f6 , #28b5d8)"} minWidth="100vw" minHeight="100vh">
             <Flex
                 display="flex"
                 flexDir="column"
@@ -237,7 +248,7 @@ export default function Signup({history}) {
                                         alignItems="center"
                                     >
                                         <Button type="submit" marginTop="5%" marginBottom="5%" width="70%" height="50px" colorScheme="teal" borderWidth={2} borderColor="rgb(40,100,100)" isLoading={isSubmitting} fontSize="xl">Verificar usuario</Button>
-                                        <Link fontSize="md" href="http://localhost:3000/login" marginBottom="5%">¿Ya tienes una cuenta?</Link>
+                                        <Link fontSize="md" href="#" onClick={goToLogin} marginBottom="5%">¿Ya tienes una cuenta?</Link>
                                     </Flex>
                                 </form>
                             </Box>

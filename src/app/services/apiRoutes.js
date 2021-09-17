@@ -13,3 +13,6 @@ export const removeFavoriteRecipe = (data) => _api.post("/users/removeFavoriteRe
 export const browseRecipes = (data) => _api.post("/recipe/findRecipes",data);
 export const browseFavorites = (data) => _api.post("/recipe/findFavorites",data);
 export const browseMyRecipes = (data) => _api.post("/recipe/findMyRecipes",data);
+export const editUser = (data) => _api.patch("/users/editUser",data);
+export const changePassword = (data) => _api.patch("/auth/changePassword",data);
+export const editRecipe = (data) => _api.patch("/recipe/editRecipe",data);

@@ -9,15 +9,16 @@ import {
   Flex,
   Divider
 } from "@chakra-ui/react";
-import {useState} from 'react';
 import {useHistory} from 'react-router-dom'
 import Swal from 'sweetalert2';
 import {removeFavoriteRecipe} from '../../services/apiRoutes';
 import {deleteRecipe} from '../../services/apiRoutes';
+import {useReducer} from 'react';
 
 
-function RecipePicker({type="search", keyId="test", imageUrl="https://bit.ly/2Z4KKcF", steps=3, ingredients=2, title="Esta es mi receta con un titulo muy largo asdasasdasdas", date="88/88/8888", favorites=10, onClick=()=>{}}) {
+function RecipePicker({type="search", keyId="test", imageUrl="https://bit.ly/2Z4KKcF", steps=3, ingredients=2, title="Esta es mi receta con un titulo muy largo asdasasdasdas", date="88/88/8888", favorites=10, onUpdate=()=>{}}) {
     const history = useHistory();
+    const [_, forceUpdate] = useReducer((x) => x + 1, 0);
 
     function goToRecipe(){
       history.push(('/recipe/'+keyId));
@@ -62,7 +63,7 @@ function RecipePicker({type="search", keyId="test", imageUrl="https://bit.ly/2Z4
                                 'success'
                               )
                               .then(()=>{
-                                history.push('/dashboard');
+                                  onUpdate();
                                 });
                         })
                         .catch(error=>{
@@ -100,7 +101,7 @@ function RecipePicker({type="search", keyId="test", imageUrl="https://bit.ly/2Z4
                     'success'
                   )
                   .then(()=>{
-                    history.push('/dashboard');
+                    onUpdate();
                   });
               })
               .catch(error=>{

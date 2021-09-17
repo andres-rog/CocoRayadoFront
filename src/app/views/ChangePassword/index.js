@@ -1,13 +1,13 @@
 import React from "react";
 import {Box, Flex, Text, Image, Stack, FormControl, Input, FormLabel, FormErrorMessage, useColorMode, Button, Link } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import logo from '../../assets/coconut.png';
+import HamburgerMenu from '../../components/Button/HamburgerMenu';
 import ToggleColor from '../../components/Button/ToggleColor';
 import {useState, useEffect} from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
-
+import {changePassword} from '../../services/apiRoutes'
 
 const schema = yup.object().shape({
   password: yup.string().required('Contraseña esta vacia').max(255),
@@ -25,7 +25,13 @@ export default function ChangePassword({history}) {
 
     useEffect(() => {
         if(!loaded) {
-            getInitData();
+            const userData = JSON.parse(localStorage.getItem("user"));
+            if(userData === null || userData===undefined){
+                history.push('/')
+            }
+            else {
+                getInitData();
+            }
         }
     },[]);
 
@@ -34,14 +40,14 @@ export default function ChangePassword({history}) {
         if(userData === null){
             history.push('/')
         }
-
+        setLoaded(true);
     }
 
     function onSubmit(values){
-        return new Promise((resolve) => {
-            setTimeout(() => {
-              alert(JSON.stringify({values}, null, 2));
-              Swal.fire({
+        changePassword({currentPassword:values.password, newPassword:values.newPassword})
+        .then((user)=>{
+            localStorage.setItem("user",JSON.stringify(user.data.result));
+            Swal.fire({
                 position: 'center',
                 icon: 'success',
                 title: '¡Contraseña actualizada!',
@@ -50,24 +56,22 @@ export default function ChangePassword({history}) {
               }).then(()=>{
                 history.push('/dashboard');
               })
-              resolve();
-            }, 3000);
         })
-        .catch(error => {
-            console.log(error);
+        .catch(err=>{
+            console.log(err);
             Swal.fire({
                 position: 'center',
                 icon: 'error',
-                title: 'Contraseña incorrecta',
-                showConfirmButton: false,
+                title: 'Sucedio un error al actualizar la contraseña.',
+                showConfirmButton: true,
                 timer: 1500
             })
-        });
+        })
     }
 
 
     return (
-        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#86FFF5, #C0FFFA, #B8FFF9)"} minWidth="100vw" minHeight="100vh">
+        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#99e5f6 , #28b5d8)"} minWidth="100vw" minHeight="100vh">
             <Flex
                 display="flex"
                 flexDir="column"
@@ -80,14 +84,9 @@ export default function ChangePassword({history}) {
                     alignContent="center"
                     alignItems="center"
                 >
+                    <HamburgerMenu/>
                     <ToggleColor/>
                     <Text fontSize="6xl" fontWeight="500">Editar usuario</Text>
-                    <Image
-                        position="absolute"
-                        bottom="50px"
-                        left="2"
-                        src={logo} marginTop="-50px" marginBottom="-20px" width="100px" height="100px">
-                    </Image>
                 </Box>
                 <Box
                     p={4}

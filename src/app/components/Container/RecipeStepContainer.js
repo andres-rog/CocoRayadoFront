@@ -12,7 +12,7 @@ import {useState} from 'react';
 
 let imageSrc=null;
 
-function RecipeStepContainer({step=0, onChangeStep=()=>{}}) {
+function RecipeStepContainer({step=0, onChangeStep=()=>{}, defaultText="", imgUrl=""}) {
     const {colorMode} = useColorMode();
     const [description, setDescription] = useState('');
     const [imageFile, setImageFile] = useState(null);
@@ -45,6 +45,7 @@ function RecipeStepContainer({step=0, onChangeStep=()=>{}}) {
             <Box display="flex" flexDir="column" alignContent="center" alignItems="center">
                 <FormLabel minW="210px" fontSize="lg">Descripcion:</FormLabel>
                 <Textarea
+                    defaultValue={defaultText}
                     marginBottom="10px"
                     width="90%"
                     height="180px"
@@ -57,7 +58,7 @@ function RecipeStepContainer({step=0, onChangeStep=()=>{}}) {
                 />
                 <Text color="red" marginBottom="10px" display={description.length>500 ? "inline" : "none"}>La descripcion no puede tener mas de 500 caracteres.</Text>
             </Box>
-            <ImageUpload onChange={handleImage}/>
+            <ImageUpload onChange={handleImage} thumbnail={imgUrl}/>
         </Box>
     </Box>
   );

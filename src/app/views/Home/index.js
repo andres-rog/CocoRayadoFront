@@ -3,13 +3,37 @@ import {Box, Flex, Text, Image, Link, useColorMode} from "@chakra-ui/react";
 import logo from '../../assets/coconut.png';
 import Card from "../../components/InfoCard/Card";
 import ToggleColor from "../../components/Button/ToggleColor";
+import {useEffect} from 'react';
 
 export default function Home({history}) {
 
     const { colorMode} = useColorMode();
 
+    function gotoLogin() {
+        history.push('/login');
+    }
+
+    function gotoSignup() {
+        history.push('/signup');
+    }
+
+    function gotoContact() {
+        history.push('/contacto');
+    }
+
+    function getDataInit(){
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if(userData !== null){
+            history.push('/dashboard')
+        }
+    }
+
+    useEffect(() => {
+        getDataInit();
+    },[]);
+
     return (
-        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#86FFF5, #C0FFFA, #B8FFF9)"} minWidth="100vw" minHeight="100vh">
+        <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#99e5f6 , #28b5d8)"} minWidth="100vw" minHeight="100vh">
             <Flex
                 display="flex"
                 flexDir="column"
@@ -35,10 +59,9 @@ export default function Home({history}) {
                     fontWeight="600"
                     color="orange.400"
                 >
-                    <Link fontSize="4xl" href="http://localhost:3000/login" marginRight="50px">Iniciar Sesion</Link>
-                    <Link fontSize="4xl" href="http://localhost:3000/signup" marginRight="50px">Crear Cuenta</Link>
-                    <Link fontSize="4xl" href="http://localhost:3000/dashboard" marginRight="50px">Busca Recetas</Link>
-                    <Link fontSize="4xl" href="http://localhost:3000/contact" marginRight="50px">Contacto</Link>
+                    <Link fontSize="4xl" href="#" onClick={gotoLogin} marginRight="70px">Iniciar Sesion</Link>
+                    <Link fontSize="4xl" href="#" onClick={gotoSignup} marginRight="70px">Crear Cuenta</Link>
+                    <Link fontSize="4xl" href="#" onClick={gotoContact} marginRight="70px">Contacto</Link>
                 </Box>
                 <Box
                     display="flex"

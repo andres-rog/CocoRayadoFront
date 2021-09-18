@@ -31,8 +31,6 @@ export default function Login({history}) {
             .then(res=>{
                 localStorage.setItem("user",JSON.stringify(res.data.result));
                 const userData = JSON.parse(localStorage.getItem("user"));
-                console.log("Userdata from local storage", userData);
-                console.log("Userdata from response", res.data.result);
                 Swal.fire({
                     position: 'center',
                     icon: 'success',

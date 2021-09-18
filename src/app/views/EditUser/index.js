@@ -52,12 +52,12 @@ export default function EditUser({history}) {
     }
 
     function slOnchange(e) {
-        frutasVegetalesFavoritos=e;
+        semillasLegumbresFavoritas=e;
         submitStatusCheck();
     }
 
     function fvOnChange(e){
-        semillasLegumbresFavoritas=e;
+        frutasVegetalesFavoritos=e;
         submitStatusCheck();
     }
 

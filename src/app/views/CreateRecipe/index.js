@@ -1,5 +1,4 @@
 import React from "react";
-
 import {Box, Text, Input, FormControl, FormLabel, useColorMode, Button, Divider, Textarea, FormErrorMessage,
         NumberInput, NumberDecrementStepper, NumberIncrementStepper, NumberInputStepper, NumberInputField, HStack,
         Tooltip, Image, Stack} from "@chakra-ui/react";
@@ -11,7 +10,7 @@ import ImageUpload from '../../components/Container/ImageUpload';
 import RecipeStepContainer from '../../components/Container/RecipeStepContainer'
 import Select from 'react-select'
 import makeAnimated from 'react-select/animated';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
 import Swal from 'sweetalert2';
@@ -29,13 +28,16 @@ const schema = yup.object().shape({
   thumbnail: yup.object().nullable().required('Agrega una foto del platillo.'),
 });
 
-const animatedComponents = makeAnimated();
 let stepsData = [{description:'', img:null}];
-const numberInputValues = {ingredientsAmount:1,portions:1,calories:1};
+let numberInputValues = {ingredientsAmount:1,portions:1,calories:1};
 
 export default function CreateRecipe({history}) {
     const [stepsDisable, setStepsDisable] = useState(true);
+    const [loaded, setLoaded] = useState(false);
+
     const {colorMode} = useColorMode();
+
+    const animatedComponents = makeAnimated();
 
     const { register, control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: yupResolver(schema),
@@ -122,6 +124,14 @@ export default function CreateRecipe({history}) {
             }
         })
     }
+
+    useEffect(() => {
+        if(!loaded) {
+            stepsData = [{description:'', img:null}];
+            numberInputValues = {ingredientsAmount:1,portions:1,calories:1};
+            setLoaded(true);
+        }
+    },[]);
 
     return (
         <Box bgGradient={(colorMode === "dark") ? "linear(to-tl,#070a0d, #121921, #0f0613)" : "linear(to-tl,#99e5f6 , #28b5d8)"} minWidth="100vw" minHeight="100vh">
